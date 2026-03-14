@@ -14,31 +14,45 @@ services:
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: cloud
-      - key: DB_URL
-        sync: false
-      - key: DB_USERNAME
-        sync: false
-      - key: DB_PASSWORD
-        sync: false
+      # --- FORCE JDBC URL ---
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: englishapp-db
+          property: connectionString
+        modifiers:
+          - type: prepend
+            value: "jdbc:"
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: englishapp-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: englishapp-db
+          property: password
+      # --- PORT & AI ---
+      - key: PORT
+        value: 10000
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ALLOWED_ORIGIN_PATTERNS
-        sync: false
+        value: https://englishapp-frontend.onrender.com
       - key: AI_PROVIDER
-        value: LOCAL
-      - key: OPENAI_API_KEY
+        value: GROQ
+      - key: GROQ_API_KEY
         sync: false
-      - key: OPENAI_MODEL
-        value: gpt-4o-mini
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
 
-  - type: static
+  - type: web
     name: englishapp-frontend
+    runtime: static
     rootDir: frontend
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
     envVars:
       - key: VITE_API_BASE_URL
-        sync: false
+        value: https://englishapp-backend.onrender.com
     routes:
       - type: rewrite
         source: /*
