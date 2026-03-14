@@ -33,6 +33,7 @@ services:
 
   - type: web
     name: englishapp-frontend
+    runtime: static
     rootDir: frontend
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
