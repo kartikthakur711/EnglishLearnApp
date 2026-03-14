@@ -14,11 +14,19 @@ services:
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: cloud
-      # --- Automatic Database Linking ---
+      # --- Automatic Database Linking with JDBC Fix ---
       - key: DB_URL
         fromDatabase:
           name: englishapp-db
           property: connectionString
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: englishapp-db
+          property: connectionString
+        # This adds the "jdbc:" prefix required by Java/Spring Boot
+        modifiers:
+          - type: prepend
+            value: "jdbc:"
       - key: DB_USERNAME
         fromDatabase:
           name: englishapp-db
@@ -27,7 +35,7 @@ services:
         fromDatabase:
           name: englishapp-db
           property: password
-      # --- Networking Fix ---
+      # --- Networking & Port Fix ---
       - key: PORT
         value: 10000
       # --- App Configuration ---
