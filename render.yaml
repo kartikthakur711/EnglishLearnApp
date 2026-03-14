@@ -14,8 +14,9 @@ services:
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: cloud
+      # --- Manual JDBC Link (Prevents Render from stripping 'jdbc:') ---
       - key: SPRING_DATASOURCE_URL
-        sync: false # We will set this manually in the dashboard
+        sync: false
       - key: SPRING_DATASOURCE_USERNAME
         fromDatabase:
           name: englishapp-db
@@ -24,10 +25,14 @@ services:
         fromDatabase:
           name: englishapp-db
           property: password
+      # --- Networking Fix ---
       - key: PORT
         value: 10000
+      # --- App Configuration ---
       - key: JWT_SECRET
         generateValue: true
+      - key: CORS_ALLOWED_ORIGIN_PATTERNS
+        value: https://englishapp-frontend.onrender.com
       - key: AI_PROVIDER
         value: GROQ
       - key: GROQ_API_KEY
