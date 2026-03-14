@@ -14,22 +14,30 @@ services:
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: cloud
+      # Auto-link the database created above
       - key: DB_URL
-        sync: false
+        fromDatabase:
+          name: englishapp-db
+          property: connectionString
       - key: DB_USERNAME
-        sync: false
+        fromDatabase:
+          name: englishapp-db
+          property: user
       - key: DB_PASSWORD
-        sync: false
+        fromDatabase:
+          name: englishapp-db
+          property: password
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ALLOWED_ORIGIN_PATTERNS
-        sync: false
+        value: https://englishapp-frontend.onrender.com
+      # AI Configuration (Using Free Groq instead of Paid OpenAI)
       - key: AI_PROVIDER
-        value: LOCAL
-      - key: OPENAI_API_KEY
+        value: GROQ
+      - key: GROQ_API_KEY
         sync: false
-      - key: OPENAI_MODEL
-        value: gpt-4o-mini
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
 
   - type: web
     name: englishapp-frontend
@@ -39,7 +47,7 @@ services:
     staticPublishPath: dist
     envVars:
       - key: VITE_API_BASE_URL
-        sync: false
+        value: https://englishapp-backend.onrender.com
     routes:
       - type: rewrite
         source: /*
