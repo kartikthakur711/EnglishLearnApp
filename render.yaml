@@ -31,7 +31,7 @@ services:
       - key: OPENAI_MODEL
         value: gpt-4o-mini
 
-  - type: static
+  - type: web
     name: englishapp-frontend
     rootDir: frontend
     buildCommand: npm ci && npm run build
