@@ -14,14 +14,8 @@ services:
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: cloud
-      # --- FORCE JDBC URL ---
       - key: SPRING_DATASOURCE_URL
-        fromDatabase:
-          name: englishapp-db
-          property: connectionString
-        modifiers:
-          - type: prepend
-            value: "jdbc:"
+        sync: false # We will set this manually in the dashboard
       - key: SPRING_DATASOURCE_USERNAME
         fromDatabase:
           name: englishapp-db
@@ -30,13 +24,10 @@ services:
         fromDatabase:
           name: englishapp-db
           property: password
-      # --- PORT & AI ---
       - key: PORT
         value: 10000
       - key: JWT_SECRET
         generateValue: true
-      - key: CORS_ALLOWED_ORIGIN_PATTERNS
-        value: https://englishapp-frontend.onrender.com
       - key: AI_PROVIDER
         value: GROQ
       - key: GROQ_API_KEY
