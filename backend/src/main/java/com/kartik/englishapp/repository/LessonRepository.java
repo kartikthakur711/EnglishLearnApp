@@ -9,4 +9,5 @@ import java.util.List;
 public interface LessonRepository extends JpaRepository<Lesson, Long> {
     List<Lesson> findByLevelBandOrderByChapterNoAsc(LevelBand levelBand);
     List<Lesson> findByLevelBandAndChapterNoOrderByIdAsc(LevelBand levelBand, int chapterNo);
+    boolean existsByLevelBandAndChapterNoAndTenseName(LevelBand levelBand, int chapterNo, String tenseName);
 }

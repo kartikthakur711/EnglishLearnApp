@@ -3,13 +3,18 @@ package com.kartik.englishapp.service;
 import com.kartik.englishapp.model.Lesson;
 import com.kartik.englishapp.model.LevelBand;
 import com.kartik.englishapp.repository.LessonRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class DataSeeder implements CommandLineRunner {
+    private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
+
     private final LessonRepository lessonRepository;
 
     public DataSeeder(LessonRepository lessonRepository) {
@@ -18,11 +23,7 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (lessonRepository.count() > 0) {
-            return;
-        }
-
-        seed(List.of(
+        List<Lesson> defaults = List.of(
                 lesson(1, "Chapter 1: Daily Actions", "Simple Present", LevelBand.MID,
                         "Use subject + base verb (adds s/es with he/she/it).",
                         "Write one sentence about your routine.",
@@ -55,7 +56,24 @@ public class DataSeeder implements CommandLineRunner {
                         "Combine unreal past condition with present/future result.",
                         "Write one mixed conditional sentence.",
                         "If I had practiced more, I would be speaking fluently now.")
-        ));
+        );
+
+        List<Lesson> missing = new ArrayList<>();
+        for (Lesson l : defaults) {
+            boolean exists = lessonRepository.existsByLevelBandAndChapterNoAndTenseName(
+                    l.getLevelBand(), l.getChapterNo(), l.getTenseName()
+            );
+            if (!exists) {
+                missing.add(l);
+            }
+        }
+
+        if (!missing.isEmpty()) {
+            lessonRepository.saveAll(missing);
+            log.info("Seeded {} missing lesson(s)", missing.size());
+        } else {
+            log.info("Lessons already present; no seeding required");
+        }
     }
 
     private Lesson lesson(int chapterNo, String chapterTitle, String tense, LevelBand level, String text, String question, String answer) {
@@ -68,9 +86,5 @@ public class DataSeeder implements CommandLineRunner {
         l.setPracticeQuestion(question);
         l.setSampleAnswer(answer);
         return l;
-    }
-
-    private void seed(List<Lesson> lessons) {
-        lessonRepository.saveAll(lessons);
     }
 }
